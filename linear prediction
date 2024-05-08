@@ -1,0 +1,31 @@
+clear all;
+close all;
+Fs=8000;
+[y,Fs] = audioread( 'C:\Program Files\MATLAB\MATLAB Production
+Server\R2015a\bin\work\data\1-11.wav');
+y=y./(1.01*abs(max(y))); %normalizing the signal amplitude from-1.0 to 1.0
+y=y(241:400); % select 20msec segment of the speech signal
+N=160;
+w=hamming(length(N));
+y=y.*w; %multiplying the signal with hamming window
+P=10;
+%autocorrelation
+ycorr=xcorr(y,y);
+ycorr=ycorr./(abs(max(ycorr)));
+A=ycorr(1:P); %pth order autocorrelation sequence
+r=ycorr(2:(P+1));
+%r=abs(r);
+figure;
+subplot(3,1,1); plot(y);
+title('voiced speech segment');
+subplot(3,1,2); plot(ycorr);
+title('Autocorrelation of voiced speech');
+A=toeplitz(A); %toeplitz autocorrelation matrix
+%A=abs(A);
+L=-inv(A)*r;%direct matrix solving method
+%LP coefficients
+disp('LP Coefficients are');
+disp(L);
+subplot(3,1,3);
+plot(L);
+title('Linear prediction coefficients');
